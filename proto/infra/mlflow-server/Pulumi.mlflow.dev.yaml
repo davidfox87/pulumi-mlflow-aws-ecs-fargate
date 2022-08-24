@@ -1,0 +1,5 @@
+config:
+  aws:region: us-west-1
+  mlflow-server:NetworkingStack: Foxy1987/network/dev
+  mlflow-server:db_password:
+    secure: AAABAC5FQ1+ogPye5k+h6+eSSgCKq0qkuaCCJNtk0Yb5kNkhb+xzrs84
