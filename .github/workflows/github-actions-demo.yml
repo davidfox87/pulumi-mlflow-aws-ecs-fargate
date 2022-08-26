@@ -1,17 +1,54 @@
 name: GitHub Actions Demo
-on: [push]
+# we'll be using the push and pull request webhook events 
+# to run the testing workflow when someone directly pushes 
+# or submits a PR to the main branch.
+on:
+  push:
+    branches:
+    - main
+  pull_request:
+    branches: 
+    - main
+
+# Once the event is triggered, a set of jobs run on a runner, 
+# which is the application that runs the job using a specific operating system.
 jobs:
-  Explore-GitHub-Actions:
+  test_model:
     runs-on: ubuntu-latest
+    # Each job contains a series of steps which are executed in order. 
+    # Each step has a name, as well as actions to use from the GitHub Action 
+    # marketplace or commands we want to run.
+    env:
+      ## Environment variable for the MLFlow tracking URI
+      TRACKING_URI: XXXXXXXXXXXX 
+
+
     steps:
-      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
-      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
-      - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
-      - name: Check out repository code
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout repo
         uses: actions/checkout@v3
-      - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
-      - run: echo "🖥️ The workflow is now ready to test your code on the runner."
-      - name: List files in the repository
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.10"
+          cache: 'pip'  # run workflows for Python projects faster on GitHub Actions 
+                        # by enabling dependency caching on the setup-python action. 
+
+      - name: Install dependencies
         run: |
-          ls ${{ github.workspace }}
-      - run: echo "🍏 This job's status is ${{ job.status }}."
+          python -m pip install --upgrade pip
+          pip install flake8 pytest
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+
+      - name: Model Training
+        run: |
+          echo The MLflow TRACKING_URI is: $TRACKING_URI  
+        #run: python3 proto/ds_experiments/train_model.py 
+
+
+      - name: Test with pytest
+        run: |
+          pip install pytest
+          pytest proto/tests
