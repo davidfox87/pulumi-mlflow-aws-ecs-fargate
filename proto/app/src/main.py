@@ -18,7 +18,9 @@ class PredictRequest(BaseModel):
 
 app = FastAPI()
 try:
-    mlflow.set_tracking_uri(os.environ.get('TRACKING_URI')) # register the mlflow-server ecs address with cloudmap
+    # mlflow.set_tracking_uri(os.environ.get('TRACKING_URI')) # register the mlflow-server ecs address with cloudmap and use that as the tracking_uri,
+    #                                                         # otherwise you have to use an internal ALB
+    mlflow.set_tracking_uri('http://internal.mlflow-server.com')
 except Exception as e:
    logging.error('Error at %s', 'TRACKING_URI', exc_info=e)
 
