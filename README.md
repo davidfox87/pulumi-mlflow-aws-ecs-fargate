@@ -1,14 +1,29 @@
-# MLOps
+# MLOps 
 
-FastAPI integration with MLFlow backend and model store
+This is demo of an MLOps platform. It serves the infrastructure using Pulumi and python in the proto/infra subfolder.
+The stack takes a few minutes to launch the MLflow server on ECS Fargate, with an S3 bucket to store the model artifacts and a MySQL database on RDS to store track the results of experiments. The load balancer URI is output by pulumi when the MLFlow-server stack has been provisioned. This URI is used by data scientists when specifying the TRACKING_URI of the MLflow server in a local Jupyter notebook.
 
-The stack takes a few minutes to launch the MLflow server on Fargate, with an S3 bucket and a MySQL database on RDS. The load balancer URI is outputs by pulumi when the MLFlow-server stack has been provisioned.
+We can first run ds_experiments/train.py to register a model with MLflow and also promote it to production.
 
-Run train.py
+Then a data scientist working in a Jupyter notebook can experiment with hyperparameter tuning of the same algorithm or compare across algorithms. The can pull the model artifact from MLflow that has been labeled with "Production" and compare it with their new models just discovered.
 
-You can then use the load balancer URI to access the MLflow UI.
+If their new model beats the score of the model in production, then they can create a new git branch, push to Github, and submit a pull request (PR). Submitting a pull request will trigger the CI/CD pipeline using github actions workflow. 
 
-Just type the address of the load balancer in your web browser.
+The series of steps involved here are:
+- unit tests of various stages of pipeline (data prep, feature eng, model training, etc) using pytest
+- integration test (build dockerized FASTAPI REST server) and test the outputs from a POST endpoint by CURLing
+- tag new model with "Production" and store artifact
+- This can be done without having to redeploy a new FastAPI container because the REST server will always pull the model artifact labeled "Production"
+
+
+Note: 
+- To access the MLflow server from your local Jupyter do mlflow.set_tracking_uri(<LOAD_BALANCER_URI>)
+- To access the MLflow UI, just type the address of the load balancer in your web browser.
+
+Below is a picture of the basic MLOps setup:
+
+![MLOps platform](mlops.png)
+
 
 TODO:
 1. provision ML-flow in aws ECS fargate
