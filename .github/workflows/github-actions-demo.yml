@@ -43,7 +43,8 @@ jobs:
 
 
       - name: Model Training
-        run: echo "The MLflow TRACKING_URI is: ${{ env.TRACKING_URI }} "   
+        run: |
+          echo The MLflow TRACKING_URI is: $TRACKING_URI  
         #run: python3 proto/ds_experiments/train_model.py 
 
 
