@@ -1,0 +1,16 @@
+FROM python:3.9-slim-buster
+
+ENV PYTHONDONTWRITEBYTECODE=true PYTHONUNBUFFERED=true
+
+COPY requirements.txt /
+
+RUN pip install -r requirements.txt
+
+USER root
+ADD ecs_sd.py /
+
+VOLUME [ "/etc/config" ]
+
+# writes ecs_auto_sd.yaml to the bind mount volume within the ECS task def. 
+# It is in the same place where prometheus.yaml lives
+CMD ["python3", "./ecs_sd.py", "-f", "/etc/config/ecs_auto_sd.yaml"] 

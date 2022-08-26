@@ -15,7 +15,6 @@ db_password=config.get_secret('db_password')
 # reference the networking stack
 networkingStack = StackReference(config.require('NetworkingStack'))
 
-
 # Create an AWS resource (S3 Bucket)
 artifact_bucket = s3.Bucket('mlflow-artifacts')
 
@@ -29,7 +28,7 @@ backend_store = RDSDb(
           subnets=[networkingStack.get_output("public_subnet1"),
                     networkingStack.get_output("public_subnet2")
           ],
-          security_group_ids=[networkingStack.get_output("rds_sg_id")]
+          security_group_ids=[networkingStack.get_output("rds_sg_id")],
      )
 )
 
@@ -41,14 +40,14 @@ mlflow = MLFlowServer(
           subnet_ids=[networkingStack.get_output("public_subnet1"),
                       networkingStack.get_output("public_subnet2"),
           ],
-          security_group_ids=[networkingStack.get_output("ecs_sg_id"),
-                            networkingStack.get_output("alb_sg_id")],
+          security_group_ids=[networkingStack.get_output("ecs_sg_id")],
           db_host = backend_store.db.address,
           db_port = 3306,
           db_user = db_user,
           db_password = db_password,
           db_name = db_name,
           artifact_bucket = artifact_bucket.bucket,
+          alb_arn=networkingStack.get_output("alb_arn")
      ),
      opts=ResourceOptions(depends_on=backend_store) # db needs to be up before knowledge builder can be provisioned.
 )
@@ -57,6 +56,4 @@ mlflow = MLFlowServer(
 # Export the name of the bucket
 export('mlflow-artifacts_bucket_name', artifact_bucket.bucket)
 
-web_url=Output.concat('http://', mlflow.alb.dns_name)
-export('Web Service URL', web_url)
 export('ECS Cluster Name', mlflow.cluster.name)

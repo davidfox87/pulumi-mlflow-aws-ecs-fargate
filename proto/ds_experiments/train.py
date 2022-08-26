@@ -17,7 +17,7 @@ logging.basicConfig(level=logging.INFO)
 if __name__ =='__main__':
     parser = argparse.ArgumentParser()
     # MLflow related parameters
-    parser.add_argument("--tracking_uri", type=str, default="http://alb-7f4ea18-958960412.us-west-1.elb.amazonaws.com")
+    parser.add_argument("--tracking_uri", type=str, default="http://alb-139d242-1640676259.us-west-1.elb.amazonaws.com")
     parser.add_argument("--experiment_name", type=str)
 
     args, _ = parser.parse_known_args()
@@ -64,6 +64,11 @@ if __name__ =='__main__':
 
         # SAVE MODEL
         logging.info('saving model in MLflow')
-        mlflow.sklearn.log_model(model, "model")
+        #mlflow.sklearn.log_model(model, "model")
 
+        mlflow.sklearn.log_model(
+            sk_model=model,
+            artifact_path="sklearn-model",
+            registered_model_name="sk-learn-random-forest-clf-model"
+        )
 

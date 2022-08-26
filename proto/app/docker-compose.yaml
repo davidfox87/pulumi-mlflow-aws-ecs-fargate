@@ -1,0 +1,10 @@
+services:
+  app:
+    build: 
+      context: .
+      args:
+        - TRACKING_URI=$TRACKING_URI
+    volumes:
+      - ~/.aws/:/root/.aws:ro
+    ports:
+      - '3000:80'

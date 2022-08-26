@@ -1,0 +1,15 @@
+version: '3'
+services:
+
+  ecs-sd:
+    container_name: ecs-sd
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - AWS_PROFILE=default
+    volumes:
+      - ~/.aws/:/root/.aws:ro
+      - ./etc/config:/etc/config
+    ports:
+    - 8485:8080

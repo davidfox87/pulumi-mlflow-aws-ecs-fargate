@@ -90,23 +90,24 @@ class Vpc(ComponentResource):
             )
             self.subnets.append(vpc_subnet)
 
+                # Create a load balancer to listen for HTTP traffic on port 80.
+        
 
         app_security_group = ec2.SecurityGroup("security-group",
-    
-        vpc_id=self.vpc.id,
-        description="Enables HTTP access",
-        ingress=[ec2.SecurityGroupIngressArgs(
-            protocol='tcp',
-            from_port=80,
-            to_port=80,
-            cidr_blocks=['0.0.0.0/0'],
-        )],
-        egress=[ec2.SecurityGroupEgressArgs(
-            protocol='-1',
-            from_port=0,
-            to_port=0,
-            cidr_blocks=['0.0.0.0/0'],
-        )])
+                        vpc_id=self.vpc.id,
+                        description="Enables HTTP access",
+                        ingress=[ec2.SecurityGroupIngressArgs(
+                            protocol='tcp',
+                            from_port=80,
+                            to_port=80,
+                            cidr_blocks=['0.0.0.0/0'],
+                        )],
+                        egress=[ec2.SecurityGroupEgressArgs(
+                            protocol='-1',
+                            from_port=0,
+                            to_port=0,
+                            cidr_blocks=['0.0.0.0/0'],
+                        )])
 
         internet_facing_lb_sg_name = f'{name}-internet-facing-lb-sg'
         self.internet_facing_lb_sg = ec2.SecurityGroup(internet_facing_lb_sg_name,
@@ -185,4 +186,6 @@ class Vpc(ComponentResource):
                                         opts=ResourceOptions(
                                             parent=self)
                                         )
+
+        
         self.register_outputs({})

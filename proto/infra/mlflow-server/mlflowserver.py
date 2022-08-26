@@ -19,8 +19,8 @@ class MLFlowServerArgs:
         db_user: str = None,
         db_password: str = None,
         db_name: str = None,
-        artifact_bucket: str = None
-
+        artifact_bucket: str = None,
+        alb_arn: str = None
 
     ):
         self.vpc_id = vpc_id
@@ -32,6 +32,7 @@ class MLFlowServerArgs:
         self.db_password = db_password
         self.db_name = db_name
         self.artifact_bucket = artifact_bucket
+        self.alb_arn = alb_arn
 
 
 class MLFlowServer(ComponentResource):
@@ -51,15 +52,7 @@ class MLFlowServer(ComponentResource):
         # Create an ECS cluster to run a container-based service.
         self.cluster = aws.ecs.Cluster('ecs',
             opts=ResourceOptions(parent=self)
-            )
-
-        # Create a load balancer to listen for HTTP traffic on port 80.
-        self.alb = aws.lb.LoadBalancer('alb',
-            security_groups=[args.security_group_ids[1]],
-            subnets=args.subnet_ids,
-            opts=ResourceOptions(parent=self)
-            )
-
+        )
 
         atg = aws.lb.TargetGroup(
             "mlflow-tg",
@@ -80,7 +73,7 @@ class MLFlowServer(ComponentResource):
         wl = aws.lb.Listener(
             "mlflow-listener",
             protocol="HTTP",
-            load_balancer_arn=self.alb.arn,
+            load_balancer_arn=args.alb_arn,
             port=80,  
             default_actions=[aws.lb.ListenerDefaultActionArgs(
                 type='forward',
@@ -210,15 +203,16 @@ class MLFlowServer(ComponentResource):
             network_configuration=aws.ecs.ServiceNetworkConfigurationArgs(
                 assign_public_ip=True,
                 subnets=args.subnet_ids,
-                security_groups=[args.security_group_ids[0]]
+                security_groups=args.security_group_ids
             ),
             load_balancers=[aws.ecs.ServiceLoadBalancerArgs(
                 target_group_arn=atg.arn,
                 container_name='mlflow_server',
                 container_port=5000,
             )],
+            
             opts=ResourceOptions(
                 depends_on=[wl], parent=self),
-            )
+        )
 
         self.register_outputs({})

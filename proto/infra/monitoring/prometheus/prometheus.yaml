@@ -1,0 +1,13 @@
+global:
+  evaluation_interval: 1m
+  scrape_interval: 30s
+  scrape_timeout: 10s
+
+scrape_configs:
+  – job_name: ecs-file-sd-config
+    file_sd_configs:
+      - files: [ "/etc/config/ecs_auto_sd.yaml" ]
+    static_configs:
+      - targets: [ 'ray.prisminternal.com:8080' ]
+        labels: 
+          ray_app_meterics

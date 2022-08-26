@@ -1,0 +1,16 @@
+FROM prom/prometheus
+
+# https://docs.aws.amazon.com/AmazonECS/latest/developerguide/bind-mounts.html
+# To expose files from a Dockerfile to a data volume when a task is run, 
+# the Amazon ECS data plane looks for a VOLUME directive. If the absolute 
+# path that's specified in the VOLUME directive is the same as the containerPath 
+# that's specified in the task definition, the data in the VOLUME directive
+# path is copied to the data volume
+
+# this matches with the volume and mountpoint in the container definition in prometheus task def
+VOLUME ["/etc/config/"] 
+
+WORKDIR /etc/config/
+
+# sanity check: try to write a file
+ADD prometheus.yaml .
