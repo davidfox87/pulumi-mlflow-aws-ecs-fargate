@@ -1,7 +1,6 @@
 # MLOps
 
 FastAPI integration with MLFlow backend and model store
-https://github.com/zademn/mnist-mlops-learning/blob/master/backend/main.py
 
 The stack takes a few minutes to launch the MLflow server on Fargate, with an S3 bucket and a MySQL database on RDS. The load balancer URI is outputs by pulumi when the MLFlow-server stack has been provisioned.
 
