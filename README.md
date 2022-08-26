@@ -9,15 +9,11 @@ Run train.py
 You can then use the load balancer URI to access the MLflow UI.
 
 Just type the address of the load balancer in your web browser.
-# Tracking Jupyter runs with MLflow in your local environment
 
-You now have a remote MLflow tracking server running accessible through a REST API via the load balancer URI.
-
-You can use the MLflow Tracking API to log parameters, metrics, and models when running your ML project in Jupyter. For this you need to install the MLflow library when running your code in Jupyter and set the remote tracking URI to be your load balancer address.
-
-The following Python API command allows you to point your code running on SageMaker to your MLflow remote server:
-
-```
-import mlflow
-mlflow.set_tracking_uri('<YOUR LOAD BALANCER URI>')
-```
+TODO:
+1. provision ML-flow in aws ECS fargate
+2. run train.py to register a model and then promote it to production
+3. In jupyter, do some experimentation and hyperparameter tuning to find a better model, register the model
+4. pull the latest model (labeled experiment 1) and the production model 
+5. Compare the scores. If the latest model beats the production model score, then we branch and submit a pull request to merge with the main branch
+6. trigger github actions workflow, if the changes pass unit and integration tests we will assign the production label to the new model

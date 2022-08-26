@@ -19,7 +19,7 @@ jobs:
     # Each step has a name, as well as actions to use from the GitHub Action 
     # marketplace or commands we want to run.
     env:
-      ## Environment variable
+      ## Environment variable for the MLFlow tracking URI
       TRACKING_URI: XXXXXXXXXXXX 
 
 
@@ -48,11 +48,7 @@ jobs:
         #run: python3 proto/ds_experiments/train_model.py 
 
 
-      - name: Lint with flake8
-        run: |
-          pip install flake8
-          flake8
       - name: Test with pytest
         run: |
           pip install pytest
-          pytest
+          pytest tests
