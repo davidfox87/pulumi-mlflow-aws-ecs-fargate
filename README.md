@@ -21,13 +21,18 @@ Note:
 - To access the MLflow UI, just type the address of the load balancer in your web browser.
 
 # ML Pipeline in the cloud
-Currently i am implementing an Airflow DAG that will automate the data cleansing, feautre engineering, training, tuning, and evaluation in AWS. This will be done by making Airflow call lambda functions.
+Currently i am implementing an Airflow DAG that will automate the data cleansing, feautre engineering, training, evaluation, and inference in AWS. This will be done by having a training and inference DAGs Airflow call lambda functions. The training DAG will output a model artifact to s3 using MLflow and the inference DAG will write prediction scores to MLflow database.
 
 
 
-Below is a picture of the basic MLOps setup:
+Below is a picture of the basic MLOps setup that supports both model experimentation and deployment on a ECS fargate cluster:
 
 ![MLOps platform](mlops.png)
+
+The picture below is the intended design for the workflow orchestration of the ML pipeline in the cloud. Currently airflow is only running locally in docker-compose.
+
+
+![MLOps workflow orchestration](airflow.png)
 
 
 TODO:
@@ -37,3 +42,4 @@ TODO:
 4. pull the latest model (labeled experiment 1) and the production model 
 5. Compare the scores. If the latest model beats the production model score, then we branch and submit a pull request to merge with the main branch
 6. trigger github actions workflow, if the changes pass unit and integration tests we will assign the production label to the new model
+7. understand how airflow can be deployed in AWS but instead of calling sagemaker jobs, call lambda functions or a REST API?
