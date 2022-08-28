@@ -16,6 +16,11 @@ The series of steps involved here are:
 - This can be done without having to redeploy a new FastAPI container because the REST server will always pull the model artifact labeled "Production"
 
 
+
+## ML Pipeline in the cloud
+Currently i am implementing an Airflow DAG that will automate the data cleansing, feautre engineering, training, tuning, and evaluation in AWS. This will be done by making Airflow call lambda functions.
+
+
 Note: 
 - To access the MLflow server from your local Jupyter do mlflow.set_tracking_uri(<LOAD_BALANCER_URI>)
 - To access the MLflow UI, just type the address of the load balancer in your web browser.
