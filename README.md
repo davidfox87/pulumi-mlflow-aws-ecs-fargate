@@ -21,7 +21,7 @@ Note:
 - To access the MLflow UI, just type the address of the load balancer in your web browser.
 
 # ML Pipeline in the cloud
-Currently i am implementing an Airflow DAG that will automate the data cleansing, feautre engineering, training, evaluation, and inference in AWS. This will be done by having a training and inference DAGs Airflow call lambda functions. The training DAG will output a model artifact to s3 using MLflow and the inference DAG will write prediction scores to MLflow database.
+Currently i am implementing an Airflow DAG that will automate the data cleansing, feautre engineering, training, evaluation, and inference in AWS. This will be done by having training and inference DAGs Airflow that call lambda functions. The training DAG will output a model artifact to s3 using MLflow and the inference DAG will write prediction scores to MLflow database.
 
 
 
