@@ -25,7 +25,7 @@ Currently i am implementing an Airflow DAG that will automate the data cleansing
 
 
 
-Below is a picture of the basic MLOps setup that supports both model experimentation and deployment on a ECS fargate cluster:
+Below is a picture of the basic MLOps setup that supports both model experimentation. Next step is to deploy the production model on an ECS fargate cluster:
 
 ![MLOps platform](mlops.png)
 
