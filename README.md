@@ -9,7 +9,7 @@ Then a data scientist working in a Jupyter notebook can experiment with hyperpar
 
 If their new model beats the score of the model in production, then they can create a new git branch, push to Github, and submit a pull request (PR). Submitting a pull request will trigger the CI/CD pipeline using github actions workflow. 
 
-The series of steps that will eventually planned are:
+Future steps in the CICD pipeline will eventually include:
 - unit tests of various stages of pipeline (data prep, feature eng, model training, etc) using pytest
 - integration test (build dockerized FASTAPI REST server) and test the outputs from a POST endpoint by CURLing
 - tag new model with "Production" and store artifact
