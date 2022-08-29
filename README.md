@@ -29,7 +29,7 @@ Below is a picture of the basic MLOps setup that supports both model experimenta
 
 ![MLOps platform](mlops.png)
 
-The picture below is the intended design for the workflow orchestration of the ML pipeline in the cloud. Currently airflow is only running locally in docker-compose.
+The picture below is the intended design for the workflow orchestration of the ML pipeline in the cloud. Currently airflow is only running locally in docker-compose and i will be testing the ability to invoke Lambda functions from this local DAG workflow.
 
 
 ![MLOps workflow orchestration](airflow.png)
