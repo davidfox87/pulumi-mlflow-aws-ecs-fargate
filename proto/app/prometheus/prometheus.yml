@@ -1,0 +1,15 @@
+# prometheus.yml
+global:
+  scrape_interval:     5s
+  evaluation_interval: 5s
+
+scrape_configs:
+  - job_name: prometheus
+    dns_sd_configs:
+    # A list of DNS domain names to be queried.
+      - names:
+          - 'ray-head'
+        type: 'A'
+        port: 8080
+
+

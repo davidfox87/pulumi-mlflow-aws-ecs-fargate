@@ -12,13 +12,14 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 
 logging.basicConfig(level=logging.INFO)
-
+os.environ['AWS_ACCESS_KEY_ID'] = 'minio'
+os.environ['AWS_SECRET_ACCESS_KEY'] = 'minio123'
 
 if __name__ =='__main__':
     parser = argparse.ArgumentParser()
     # MLflow related parameters
-    parser.add_argument("--tracking_uri", type=str, default="http://alb-139d242-1640676259.us-west-1.elb.amazonaws.com")
-    parser.add_argument("--experiment_name", type=str)
+    parser.add_argument("--tracking-uri", type=str, default="http://alb-139d242-1640676259.us-west-1.elb.amazonaws.com")
+    parser.add_argument("--experiment-name", type=str)
 
     args, _ = parser.parse_known_args()
 

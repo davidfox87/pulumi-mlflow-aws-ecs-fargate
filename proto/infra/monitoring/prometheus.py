@@ -119,18 +119,7 @@ class Prometheus(ComponentResource):
             network_mode="awsvpc",
             family="Prometheus-Grafana",
             container_definitions=json.dumps([
-                    # sidecar container, which periodically updates prom scrape targets in /tmp/ecs_auto_sd.yaml
-                    # might be needed because if there are multiple instances in cloud map will the DNS query return 1 instance or
-                    # all? The Boto3 ecs auto-discovery container will periodically scan the ecs task IP addresses and auto-generate 
-                    # the sd_file_config containing the Prometheus scrape targets that the Prometheus.yaml file will use.
-                    {
-                        "name": "ecs-sd",
-                        "image": "<ecs_sd_image_from_ecr>",
-                        "memory": 512,
-                        "cpu": 256,
-                        "essential": True
-                    },
-                    {
+                   {
                         "name": "grafana",
                         "image": "grafana/grafana:latest",
                         "memory": 512,
@@ -175,12 +164,6 @@ class Prometheus(ComponentResource):
                             {
                             "sourceVolume":"logsVolume",
                             "containerPath":"/data"
-                            }
-                        ],
-                        "dependsOn": [ # wait for ecs auto-discovery container
-                            {
-                                "containerName": "ecs-sd",
-                                "condition": "START"
                             }
                         ]
                     },       
