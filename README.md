@@ -9,7 +9,7 @@ Then a data scientist working in a Jupyter notebook can experiment with hyperpar
 
 If their new model beats the score of the model in production, then they can create a new git branch, push to Github, and submit a pull request (PR). Submitting a pull request will trigger the CI/CD pipeline using github actions workflow. 
 
-The series of steps involved here are:
+Future steps in the CICD pipeline will eventually include:
 - unit tests of various stages of pipeline (data prep, feature eng, model training, etc) using pytest
 - integration test (build dockerized FASTAPI REST server) and test the outputs from a POST endpoint by CURLing
 - tag new model with "Production" and store artifact
@@ -25,11 +25,11 @@ Currently i am implementing an Airflow DAG that will automate the data cleansing
 
 
 
-Below is a picture of the basic MLOps setup that supports both model experimentation and deployment on a ECS fargate cluster:
+Below is a picture of the basic MLOps setup that supports both model experimentation. Next step is to deploy the production model on an ECS fargate cluster:
 
 ![MLOps platform](mlops.png)
 
-The picture below is the intended design for the workflow orchestration of the ML pipeline in the cloud. Currently airflow is only running locally in docker-compose.
+The picture below is the intended design for the workflow orchestration of the ML pipeline in the cloud. Currently airflow is only running locally in docker-compose and i will be testing the ability to invoke Lambda functions from this local DAG workflow.
 
 
 ![MLOps workflow orchestration](airflow.png)
