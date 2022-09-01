@@ -1,7 +1,7 @@
 """This DAG has the goal to simulate a ML Training pipeline
 Follow the instruction in the README.md to complete the DAG.
 """
-from collections import _T1
+
 from datetime import timedelta
 
 from airflow import DAG
@@ -10,8 +10,6 @@ from airflow.models import Variable
 from airflow.operators.python_operator import PythonOperator
 from airflow.operators.bash import BashOperator
 from airflow.utils.dates import days_ago
-
-from src.model_toolbox import preprocess_raw_data, fit_model, predict
 
 # default_args when passed to a DAG, it will apply to any of its operators
 default_args = {
@@ -42,25 +40,11 @@ with dag:
         bash_command='date',
         dag=dag)
 
-    t2 = BashOperator(
-        task_id='sleep',
-        bash_command='sleep 5',
-        retries=3,
-        dag=dag)
-
-    templated_command = """
-        {% for i in range(5) %}
-            echo "{{ ds }}"
-            echo "{{ macros.ds_add(ds, 7)}}"
-            echo "{{ params.my_param }}"
-        {% endfor %}
-    """
-
-    t3 = BashOperator(
-        task_id='templated',
-        bash_command=templated_command,
-        params={'my_param': 'Parameter I passed in'},
-        dag=dag)
+    invoke_lambda_function = AwsLambdaInvokeFunctionOperator(
+        task_id='setup__invoke_lambda_function',
+        function_name="testLambda-2a895f6",
+        payload=SAMPLE_EVENT,
+    )
 
     t2.set_upstream(t1)
     t3.set_upstream(t1)

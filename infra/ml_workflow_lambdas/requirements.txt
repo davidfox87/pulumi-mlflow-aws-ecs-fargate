@@ -1,2 +1,13 @@
-pulumi>=3.0.0,<4.0.0
-pulumi-aws>=5.0.0,<6.0.0
+Arpeggio==1.10.2
+attrs==22.1.0
+dill==0.3.5.1
+fsspec==2022.8.2
+grpcio==1.47.0
+parver==0.3.1
+protobuf==4.21.5
+pulumi==3.38.0
+pulumi-aws==5.13.0
+pulumi-docker==3.4.1
+PyYAML==5.4.1
+semver==2.13.0
+six==1.16.0

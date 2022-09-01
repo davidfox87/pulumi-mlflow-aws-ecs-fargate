@@ -8,7 +8,7 @@ repo = aws.ecr.Repository("churn-train")
 
 ecr_creds = aws.ecr.get_authorization_token()
 
-lambda_image = docker.Image("xgboost-train-dockerimage",
+lambda_image = docker.Image("test_lambda",
     image_name=repo.repository_url,
     build="./steps",
     skip_push=False,
