@@ -21,6 +21,8 @@ export("public_subnet2", my_network.subnets[1].id)
 export("alb_sg_id", my_network.internet_facing_lb_sg.id)
 export("rds_sg_id", my_network.rds_sg.id)
 export("ecs_sg_id", my_network.ecs_sg.id)
+export("postgres_public_sg", my_network.postgres_public_sg.id)
+export("web_server_ecs_internal_sg", my_network.web_server_ecs_internal_sg.id)
 export('alb_arn', alb.arn)
 
 

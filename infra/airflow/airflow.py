@@ -43,17 +43,18 @@ class Airflow(ComponentResource):
         )
 
         atg = aws.lb.TargetGroup(
-            "airflowflow-tg",
-            port=5000, 
+            "airflow-webserver-tg",
+            port=8080, 
             protocol="HTTP",
             target_type="ip",
             vpc_id=args.vpc_id,
             health_check=aws.lb.TargetGroupHealthCheckArgs(
-                healthy_threshold=2,
-                interval=5,
-                timeout=4,
+                healthy_threshold=5,
+                interval=10,
+                timeout=5,
                 protocol='HTTP',
-                matcher='200-399'
+                matcher='200-399',
+                path='/health'
             ),
             opts=ResourceOptions(parent=self),
         )
