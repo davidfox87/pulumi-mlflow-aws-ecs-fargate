@@ -114,5 +114,7 @@ eks_node_group = eks.NodeGroup(
         min_size=1,
     ),
 )
+
 # Export the cluster's kubeconfig.
 export('kubeconfig', cluster.kubeconfig)
+
