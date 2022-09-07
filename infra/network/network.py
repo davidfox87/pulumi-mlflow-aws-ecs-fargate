@@ -40,7 +40,7 @@ class Vpc(ComponentResource):
                            opts=ResourceOptions(parent=self)
                            )
 
-        # create internet gateway for public subnets
+         # create internet gateway for public subnets
         igw_name = f'{name}-igw'
         self.igw = ec2.InternetGateway(igw_name,
                                        vpc_id=self.vpc.id,
@@ -90,6 +90,8 @@ class Vpc(ComponentResource):
             )
             self.subnets.append(vpc_subnet)
 
+        
+
          # Create a load balancer to listen for HTTP traffic on port 80.
         internet_facing_lb_sg_name = f'{name}-internet-facing-lb-sg'
         self.internet_facing_lb_sg = ec2.SecurityGroup(internet_facing_lb_sg_name,
@@ -115,6 +117,7 @@ class Vpc(ComponentResource):
                                                           opts=ResourceOptions(parent=self)
                                                           )
 
+        ##### MLflow-related security groups ########
         mlflow_sg_name = f'{name}-mlflow-ecs-sg'
         self.ecs_sg = ec2.SecurityGroup(
             mlflow_sg_name,
@@ -171,8 +174,6 @@ class Vpc(ComponentResource):
 
         ##### airflow -related security groups #########
 
-
-        # security group that allows ecs to access the rds
         postgres_sg_name = f'{name}-rds-sg'
         self.postgres_public_sg = ec2.SecurityGroup(postgres_sg_name,
                                         vpc_id=self.vpc.id,
@@ -326,4 +327,32 @@ class Vpc(ComponentResource):
                                             )],
                                         opts=ResourceOptions(parent=self)
                                     )
+
+
+
+
+        self.eks_security_group = ec2.SecurityGroup('eks-cluster-sg',
+                                vpc_id=self.vpc.id,
+                                description='Allow all HTTP(s) traffic to EKS Cluster',
+                                tags={
+                                    'Name': 'pulumi-cluster-sg',
+                                },
+                                ingress=[
+                                    ec2.SecurityGroupIngressArgs(
+                                        cidr_blocks=['0.0.0.0/0'],
+                                        from_port=443,
+                                        to_port=443,
+                                        protocol='tcp',
+                                        description='Allow pods to communicate with the cluster API Server.'
+                                    ),
+                                    ec2.SecurityGroupIngressArgs(
+                                        cidr_blocks=['0.0.0.0/0'],
+                                        from_port=80,
+                                        to_port=80,
+                                        protocol='tcp',
+                                        description='Allow internet access to pods'
+                                    ),
+                                ],
+        )
+
         self.register_outputs({})

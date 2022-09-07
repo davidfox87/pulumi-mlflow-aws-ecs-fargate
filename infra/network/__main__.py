@@ -24,7 +24,6 @@ export("ecs_sg_id", my_network.ecs_sg.id)
 export("postgres_public_sg", my_network.postgres_public_sg.id)
 export("web_server_ecs_internal_sg", my_network.web_server_ecs_internal_sg.id)
 export('alb_arn', alb.arn)
-
-
+export("eks_security_group", my_network.eks_security_group.id)
 web_url=Output.concat('http://', alb.dns_name)
 export('Web Service URL', web_url)
