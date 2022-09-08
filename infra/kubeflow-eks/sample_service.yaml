@@ -9,8 +9,7 @@ spec:
     app: my-nginx
   type: LoadBalancer
   ports:
-  - port: 8080
-    targetPort: 80
+  - port: 80
     protocol: TCP
-    name: http
+
   

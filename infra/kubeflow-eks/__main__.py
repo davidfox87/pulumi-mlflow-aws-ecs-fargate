@@ -119,6 +119,11 @@ fixed_node_group = eks.NodeGroup('my-cluster-ng1',
     )
 )
 
+# https://www.pulumi.com/docs/guides/crosswalk/aws/eks/
+
+
+
+
 # Export the cluster's kubeconfig.
 export('kubeconfig', cluster.kubeconfig)
 
