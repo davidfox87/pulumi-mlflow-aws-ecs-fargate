@@ -1,6 +1,7 @@
 """An AWS Python Pulumi program"""
-from pulumi import export, Config, StackReference, Output
-from pulumi_aws import iam, eks
+from pulumi import export, Config, StackReference, Output, ResourceOptions
+from pulumi_aws import iam
+import pulumi_eks as eks
 import json
 
 # Get config data
@@ -40,6 +41,9 @@ iam.RolePolicyAttachment(
     role=eks_role.id,
     policy_arn='arn:aws:iam::aws:policy/AmazonEKSClusterPolicy',
 )
+instance_profile_1 = iam.InstanceProfile('my-instance-profile1',
+    iam.InstanceProfileArgs(role=eks_role))
+
 
 ## Ec2 NodeGroup Role
 
@@ -60,6 +64,8 @@ ec2_role = iam.Role(
     }),
 )
 
+
+
 iam.RolePolicyAttachment(
     'eks-workernode-policy-attachment',
     role=ec2_role.id,
@@ -79,40 +85,38 @@ iam.RolePolicyAttachment(
     policy_arn='arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly',
 )
 
+instance_profile_2 = iam.InstanceProfile('my-instance-profile2',
+    iam.InstanceProfileArgs(role=ec2_role))
 
 cluster = eks.Cluster('my-cluster',
-    vpc_config=eks.ClusterVpcConfigArgs(
-        vpc_id = networkingStack.get_output("vpc_id"),
+    eks.ClusterArgs(
+        vpc_id=networkingStack.get_output("vpc_id"),
         subnet_ids=[networkingStack.get_output("public_subnet1"),
                     networkingStack.get_output("public_subnet2"),
+
         ],
-        security_group_ids=[networkingStack.get_output("eks_security_group")],
+        instance_roles=[eks_role, ec2_role],
         public_access_cidrs=['0.0.0.0/0'],
-    ),
-    role_arn=eks_role.arn,
-    tags={
-        'Name': 'pulumi-eks-cluster',
-    },
+        skip_default_node_group = True
+    )
 )
 
 
-eks_node_group = eks.NodeGroup(
-    'eks-node-group',
-    cluster_name=cluster.name, # cluster Node group will attach to 
-    node_group_name='pulumi-eks-nodegroup',
-    node_role_arn=ec2_role.arn,
-    instance_types=["t3.medium"], # this is the default
-    subnet_ids=[networkingStack.get_output("public_subnet1"),
-                networkingStack.get_output("public_subnet2"),
-    ],
-    tags={
-        'Name': 'pulumi-cluster-nodeGroup',
-    },
-    scaling_config=eks.NodeGroupScalingConfigArgs(
-        desired_size=2,
-        max_size=2,
-        min_size=1,
-    ),
+# First, create a node group for fixed compute.
+fixed_node_group = eks.NodeGroup('my-cluster-ng1',
+    cluster = cluster.core,
+    instance_type = 't2.medium',
+    desired_capacity = 2,
+    min_size = 1,
+    max_size = 3,
+    labels = {'ondemand': 'true'},
+    instance_profile = instance_profile_2,
+    opts = ResourceOptions(
+        parent = cluster,
+        providers = {
+            'kubernetes': cluster.provider,
+        }
+    )
 )
 
 # Export the cluster's kubeconfig.

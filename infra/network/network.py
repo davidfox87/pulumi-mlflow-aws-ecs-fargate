@@ -174,7 +174,7 @@ class Vpc(ComponentResource):
 
         ##### airflow -related security groups #########
 
-        postgres_sg_name = f'{name}-rds-sg'
+        postgres_sg_name = f'{name}-psql-sg'
         self.postgres_public_sg = ec2.SecurityGroup(postgres_sg_name,
                                         vpc_id=self.vpc.id,
                                         description='Allow all inbound for Postgres',
