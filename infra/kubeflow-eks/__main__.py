@@ -1,4 +1,5 @@
 """An AWS Python Pulumi program"""
+from venv import create
 from pulumi import export, Config, StackReference, Output, ResourceOptions
 from pulumi_aws import iam
 import pulumi_eks as eks
@@ -12,6 +13,9 @@ service_name = config.get('service_name') or 'mlops'
 # reference the networking stack
 networkingStack = StackReference(config.require('NetworkingStack'))
 
+managed_policy_arns = ['arn:aws:iam::aws:policy/AmazonEKSServicePolicy',
+                        'arn:aws:iam::aws:policy/AmazonEKSClusterPolicy'
+]
 eks_role = iam.Role(
     'eks-iam-role',
     assume_role_policy=json.dumps({
@@ -29,23 +33,22 @@ eks_role = iam.Role(
     }),
 )
 
-iam.RolePolicyAttachment(
-    'eks-service-policy-attachment',
-    role=eks_role.id,
-    policy_arn='arn:aws:iam::aws:policy/AmazonEKSServicePolicy',
-)
+for i, policy in enumerate(managed_policy_arns):
+    rpa = iam.RolePolicyAttachment(
+        f"eks-role-policy-{i}",
+        role=eks_role.id,
+        policy_arn=policy,
+    )
 
-
-iam.RolePolicyAttachment(
-    'eks-cluster-policy-attachment',
-    role=eks_role.id,
-    policy_arn='arn:aws:iam::aws:policy/AmazonEKSClusterPolicy',
-)
 instance_profile_1 = iam.InstanceProfile('my-instance-profile1',
     iam.InstanceProfileArgs(role=eks_role))
 
 
 ## Ec2 NodeGroup Role
+managed_policy_arns = ['arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy',
+                        'arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy',
+                        'arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly'
+]
 
 ec2_role = iam.Role(
     'ec2-nodegroup-iam-role',
@@ -64,40 +67,32 @@ ec2_role = iam.Role(
     }),
 )
 
-
-
-iam.RolePolicyAttachment(
-    'eks-workernode-policy-attachment',
-    role=ec2_role.id,
-    policy_arn='arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy',
-)
-
-
-iam.RolePolicyAttachment(
-    'eks-cni-policy-attachment',
-    role=ec2_role.id,
-    policy_arn='arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy',
-)
-
-iam.RolePolicyAttachment(
-    'ec2-container-ro-policy-attachment',
-    role=ec2_role.id,
-    policy_arn='arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly',
-)
+for i, policy in enumerate(managed_policy_arns):
+    rpa = iam.RolePolicyAttachment(
+        f"ec2-role-policy-{i}",
+        role=ec2_role.id,
+        policy_arn=policy,
+    )
 
 instance_profile_2 = iam.InstanceProfile('my-instance-profile2',
     iam.InstanceProfileArgs(role=ec2_role))
 
+
 cluster = eks.Cluster('my-cluster',
     eks.ClusterArgs(
         vpc_id=networkingStack.get_output("vpc_id"),
-        subnet_ids=[networkingStack.get_output("public_subnet1"),
+        # Mixed (recommended): Set both privateSubnetIds and publicSubnetIds
+        # Default all worker nodes to run in private subnets, and use the public subnets for internet-facing load balancers.
+        public_subnet_ids=[networkingStack.get_output("public_subnet1"),
                     networkingStack.get_output("public_subnet2"),
-
+        ],
+        private_subnet_ids=[networkingStack.get_output("private_subnet1"),
+                    networkingStack.get_output("private_subnet2"),
         ],
         instance_roles=[eks_role, ec2_role],
         public_access_cidrs=['0.0.0.0/0'],
-        skip_default_node_group = True
+        skip_default_node_group = True,
+        create_oidc_provider=True
     )
 )
 
