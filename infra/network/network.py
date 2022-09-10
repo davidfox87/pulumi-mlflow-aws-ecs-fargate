@@ -89,6 +89,55 @@ class Vpc(ComponentResource):
                 opts=ResourceOptions(parent=self)
             )
             self.subnets.append(vpc_subnet)
+         # connectivity type defaults to public
+                # create NAT gateway as a proxy for private subnets to communicate with outside world
+        eip = ec2.Eip(f"{name}-eip",
+                      vpc=True,
+                      opts=ResourceOptions(parent=self))
+
+
+        natgw_name = f'{name}-natgw'
+        self.natgw = ec2.NatGateway(natgw_name,
+                                    # NAT gateway sits in the first public subnet
+                                    subnet_id=self.subnets[0],
+                                    allocation_id=eip.id,
+                                    tags={
+                                        "Name": "NAT gw",
+                                    },
+                                    opts=ResourceOptions(parent=self)
+                                    )
+
+        nat_rt_name = f'{name}-nat_rt'
+        self.nat_route_table = ec2.RouteTable(nat_rt_name,
+                                              vpc_id=self.vpc.id,
+                                              routes=[ec2.RouteTableRouteArgs(
+                                                  cidr_block='0.0.0.0/0',
+                                                  nat_gateway_id=self.natgw.id,
+                                              )],
+                                              tags={
+                                                  'Name': nat_rt_name
+                                              },
+                                              opts=ResourceOptions(parent=self)
+                                              )
+
+        subnet_name_base = f'{name}-private-subnet'
+        for zone in zone_names:  # iterates over two availability zones, which is required for application load balancer
+            vpc_subnet = ec2.Subnet(f'{subnet_name_base}-{zone}',
+                                    vpc_id=self.vpc.id,
+                                    cidr_block=f'10.100.{len(self.subnets)}.0/24',
+                                    availability_zone=zone,
+                                    tags={
+                                        'Name': f'{subnet_name_base}-{zone}',
+                                    },
+                                    opts=ResourceOptions(parent=self)
+                                    )
+            ec2.RouteTableAssociation(
+                f'vpc-natgw-route-table-assoc-{zone}',
+                route_table_id=self.nat_route_table.id,
+                subnet_id=vpc_subnet.id,
+                opts=ResourceOptions(parent=self)
+            )
+            self.subnets.append(vpc_subnet)
 
         
 

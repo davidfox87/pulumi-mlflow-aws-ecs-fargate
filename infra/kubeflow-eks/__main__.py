@@ -84,15 +84,16 @@ cluster = eks.Cluster('my-cluster',
         # Mixed (recommended): Set both privateSubnetIds and publicSubnetIds
         # Default all worker nodes to run in private subnets, and use the public subnets for internet-facing load balancers.
         public_subnet_ids=[networkingStack.get_output("public_subnet1"),
-                    networkingStack.get_output("public_subnet2"),
+                            networkingStack.get_output("public_subnet2"),
         ],
-        private_subnet_ids=[networkingStack.get_output("private_subnet1"),
-                    networkingStack.get_output("private_subnet2"),
-        ],
-        instance_roles=[eks_role, ec2_role],
+        # private_subnet_ids=[networkingStack.get_output("private_subnet1"),
+        #             networkingStack.get_output("private_subnet2"),
+        # ],
+        #instance_role=ec2_role,
+        service_role=eks_role,
         public_access_cidrs=['0.0.0.0/0'],
-        skip_default_node_group = True,
-        create_oidc_provider=True
+        #skip_default_node_group = True,
+        #create_oidc_provider=True
     )
 )
 

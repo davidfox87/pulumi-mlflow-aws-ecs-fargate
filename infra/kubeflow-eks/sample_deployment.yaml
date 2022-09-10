@@ -5,22 +5,15 @@ metadata:
 spec:
   selector:
     matchLabels:
-      run: my-nginx
+      app: my-nginx
   replicas: 2
   template:
     metadata:
       labels:
-        run: my-nginx
+        app: my-nginx
     spec:
       containers:
-      - name: nginxhttp
+      - name: my-nginx
         image: nginx
         ports:
           - containerPort: 80 # expose container on port 80 so that nginx is accessible
-        resources:
-        limits:
-          memory: 512Mi
-          cpu: "1"
-        requests:
-          memory: 256Mi
-          cpu: "0.2"
