@@ -29,11 +29,3 @@ The picture below is the intended design for the workflow orchestration of the M
 ![MLOps workflow orchestration](airflow.png)
 
 
-TODO:
-1. provision ML-flow in aws ECS fargate
-2. run train.py to register a model and then promote it to production
-3. In jupyter, do some experimentation and hyperparameter tuning to find a better model, register the model
-4. pull the latest model (labeled experiment 1) and the production model 
-5. Compare the scores. If the latest model beats the production model score, then we branch and submit a pull request to merge with the main branch
-6. trigger github actions workflow, if the changes pass unit and integration tests we will assign the production label to the new model
-7. understand how airflow can be deployed in AWS but instead of calling sagemaker jobs, call lambda functions or a REST API?
