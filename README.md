@@ -9,20 +9,14 @@ Then a data scientist working in a Jupyter notebook can experiment with hyperpar
 
 If their new model beats the score of the model in production, then they can create a new git branch, push to Github, and submit a pull request (PR). Submitting a pull request will trigger the CI/CD pipeline using github actions workflow. 
 
-Future steps in the CICD pipeline will eventually include:
-- unit tests of various stages of pipeline (data prep, feature eng, model training, etc) using pytest
-- integration test (build dockerized FASTAPI REST server) and test the outputs from a POST endpoint by CURLing
-- tag new model with "Production" and store artifact
-- This can be done without having to redeploy a new FastAPI container because the REST server will always pull the model artifact labeled "Production"
-
 
 Note: 
 - To access the MLflow server from your local Jupyter do mlflow.set_tracking_uri(<LOAD_BALANCER_URI>)
 - To access the MLflow UI, just type the address of the load balancer in your web browser.
 
-# ML Pipeline in the cloud
-Currently i am implementing an Airflow DAG that will automate the data cleansing, feautre engineering, training, evaluation, and inference in AWS. This will be done by having training and inference DAGs Airflow that call lambda functions. The training DAG will output a model artifact to s3 using MLflow and the inference DAG will output prediction scores.
-
+# ML Pipelines in the cloud
+- playing with Airflow DAGs and AWS lambda functions
+- playing with Kubeflow pipelines running in EKS
 
 
 Below is a picture of the basic MLOps setup that supports both model experimentation. Next step is to deploy the production model on an ECS fargate cluster:
